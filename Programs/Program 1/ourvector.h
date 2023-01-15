@@ -503,12 +503,12 @@ public:
       name = name.substr(0, pos);
     }
 
-    //cerr << "*********************************************************" << endl;
-    //cerr << "ourvector<" << name << "> stats:" << endl;
-    //cerr << " # of vectors created:   " << Vectors << endl;
-    //cerr << " # of elements inserted: " << Inserts << endl;
-    //cerr << " # of elements accessed: " << Accesses << endl;
-    //cerr << "*********************************************************" << endl;
+    cerr << "*********************************************************" << endl;
+    cerr << "ourvector<" << name << "> stats:" << endl;
+    cerr << " # of vectors created:   " << Vectors << endl;
+    cerr << " # of elements inserted: " << Inserts << endl;
+    cerr << " # of elements accessed: " << Accesses << endl;
+    cerr << "*********************************************************" << endl;
   }
 
 };

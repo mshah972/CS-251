@@ -1,10 +1,16 @@
 //
 //  Project 1 Starter Code - Gerrymandering
-//  TODO:  Replace this comment with your header info.
-//  
+//  Moksh Shah
+//  CS 251 - Data Structures
+//  01/15/2023
 //
 
 #include "ourvector.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <math.h>
+#include <algorithm>
 
 using namespace std;
 
