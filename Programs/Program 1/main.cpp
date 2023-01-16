@@ -14,6 +14,12 @@
 
 using namespace std;
 
+bool data_loaded = false;
+string state_name = "N/A";
+string command = " ";
+string is_data_loaded = " ";
+
+
 int main() {
     //TODO:  Write your code here.  
     // You should have LOTS of function decomposition.
