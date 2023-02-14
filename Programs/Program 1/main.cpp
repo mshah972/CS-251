@@ -11,30 +11,43 @@
 #include <string>
 #include <math.h>
 #include <algorithm>
-#include <vector>
-#include <sstream>
+#include <iomanip>
 
 using namespace std;
 
-
 bool data_loaded = false;
-string state = "N/A";
+string state_name = "N/A";
 string command = " ";
 string is_data_loaded = " ";
-vector<vector<string>> districts_info;
 
-
-void load_districts()
+void display_prompt()
 {
-    
+    if(data_loaded == true)
+    {
+        is_data_loaded = "Yes";
+    }
+    else
+    {
+        is_data_loaded = "No";
+    }
+
+    cout << "Data Loaded? " << is_data_loaded << endl;
+    cout << "State: " << state_name << endl;
+    cout << endl;
+
+    cout << "Enter command: ";
+    getline(cin, command);
+
+    cout << endl;
+
+    cout << setfill('-') << setw(40) << "-" << endl;
 }
 
-int main()
-{
-    cout << "Welcome to Gerrymandering!" << endl;
 
-    load_districts();
-
+int main() {
+    //TODO:  Write your code here.  
+    // You should have LOTS of function decomposition.
+    display_prompt();
 
     return 0;
 }
