@@ -34,6 +34,13 @@
     "**/.vscode/**"
   ],
   "files.associations": {
-    "ostream": "cpp"
-  }
+    "ostream": "cpp",
+    "iostream": "cpp",
+    "sstream": "cpp",
+    "iosfwd": "cpp",
+    "utility": "cpp",
+    "fstream": "cpp",
+    "xstring": "cpp"
+  },
+  "C_Cpp.dimInactiveRegions": false
 }

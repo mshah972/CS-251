@@ -1,18 +1,18 @@
 {
     "configurations": [
         {
-            "name": "windows-gcc-x64",
+            "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**"
             ],
-            "compilerPath": "C:/MinGW/bin/gcc.exe",
-            "cStandard": "${default}",
-            "cppStandard": "${default}",
-            "intelliSenseMode": "windows-gcc-x64",
-            "compilerArgs": [
-                ""
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
             ],
-            "configurationProvider": "ms-vscode.makefile-tools"
+            "windowsSdkVersion": "10.0.19041.0",
+            "compilerPath": "C:/Program Files/LLVM/bin/clang++.exe",
+            "intelliSenseMode": "clang-x64"
         }
     ],
     "version": 4
