@@ -11,6 +11,7 @@
 #include <map>
 #include <set>
 #include <cctype>
+#include <sstream>
 using namespace std;
 
 // INSERTS GIVEN HELPERS CODE BELOW - DO NOT REMOVE
@@ -68,8 +69,8 @@ void loadCommand(string filename)
 	}
 
 	string album, line, artist;
-
 	bool first = false;
+
 	while (!inFile.eof())
 	{
 		bool second = false;
@@ -85,42 +86,27 @@ void loadCommand(string filename)
 
 		for (char c : line)
 		{
-			if (isdigit(c))
+			if(isdigit(c))
 			{
 				second = true;
 				break;
 			}
 		}
 
-		if (second != true && line != album)
-		{
-			artist = line;
-			AlbumMap[album].artists.insert(line);
-		}
-		else if (second == true && line != album)
+		if (second == true && line != album)
 		{
 			AlbumMap[album].songs.insert(line);
 		}
-		else
+		else if (second == false && line != album)
+		{
+			AlbumMap[album].artists.insert(line);
+		}
+		else if (line == album)
 		{
 			first = false;
 		}
 	}
 	inFile.close();
-
-	for (auto &album : AlbumMap)
-	{
-		for (auto &artist : album.second.artists)
-		{
-			for (auto &song : album.second.songs)
-			{
-				if (artist == song)
-				{
-					album.second.songs.erase(song);
-				}
-			}
-		}
-	}
 }
 
 // Stats Function to print out the stats
@@ -138,7 +124,7 @@ void statsCommand(string userInput)
 	{
 		for (auto &artist : album.second.artists)
 		{
-			if (countedArtists.find(artist) == countedArtists.end())
+			if (countedArtists.find(artist) == countedArtists.end() && artist != "")
 			{
 				countedArtists.insert(artist);
 			}
@@ -147,10 +133,12 @@ void statsCommand(string userInput)
 
 	numArtists = countedArtists.size();
 
-	// count the number of songs
 	for (auto &album : AlbumMap)
 	{
-		numSongs += album.second.songs.size();
+		for (auto &Song : album.second.songs)
+		{
+			numSongs++;
+		}
 	}
 
 	cout << "Overall Music Library Stats" << endl;
@@ -230,6 +218,7 @@ void searchCommand(string userInput)
 
 	splitFirstWord(userInput, searchType, searchValue);
 
+
 	if ((searchType != "artist") && (searchType != "album") && (searchType != "song"))
 	{
 		cout << "Error: Search terms cannot be empty." << endl;
@@ -246,134 +235,588 @@ void searchCommand(string userInput)
 		return;
 	}
 
-	if (searchType == "artist")
+	// Check if the search value has a space
+	if(searchValue.find(" ") != string::npos)
 	{
-		set<string> albums;
-		for (auto &album : AlbumMap)
-		{
-			for (auto &artist : album.second.artists)
-			{
-				string artistLower = artist;
-				string searchValueLower = searchValue;
-
-				// convert to lowercase
-				for (char &c : artistLower)
-				{
-					c = tolower(c);
-				}
-
-				for (char &c : searchValueLower)
-				{
-					c = tolower(c);
-				}
-
-				// search for the search value in the artist
-				if (artistLower.find(searchValueLower) != string::npos)
-				{
-					albums.insert(album.first);
-				}
-			}
-		}
-		if (albums.empty())
-		{
-			cout << "No results found." << endl;
-		}
-		else
-		{
-			cout << "Your search results exist in the following albums: " << endl;
-			for (auto &album : albums)
-			{
-				cout << album << endl;
-			}
-			cout << endl;
-		}
-	}
-	else if (searchType == "album")
-	{
-		if (searchValue.empty())
-		{
-			cout << "Error: Search terms cannot be empty." << endl;
-			return;
-		}
-		set<string> albums;
-		for (auto &album : AlbumMap)
-		{
-			string albumLower = album.first;
-			string searchValueLower = searchValue;
-			
-			for (char &c : albumLower)
-			{
-				c = tolower(c);
-			}
-
-			for (char &c : searchValueLower)
-			{
-				c = tolower(c);
-			}
-
-			if (albumLower.find(searchValueLower) != string::npos)
-			{
-				albums.insert(album.first);
-			}
-		}
-		if (albums.empty())
-		{
-			cout << "No results found." << endl;
-		}
-		else
-		{
-			cout << "Your search results exist in the following albums: " << endl;
-			for (auto &album : albums)
-			{
-				cout << album << endl;
-			}
-			cout << endl;
-		}
-	}
-	else if (searchType == "song")
-	{
-		set<string> albums;
-		for (auto &album : AlbumMap)
-		{
-			for (auto &song : album.second.songs)
-			{
-				string songLower = song;
-				string searchValueLower = searchValue;
+		set<string> words;
+		stringstream ss(searchValue);
 		
-				for (char &c : songLower)
-				{
-					c = tolower(c);
-				}
+		// Split the search value into words
+		while (ss.good())
+		{
+			string substr;
+			getline(ss, substr, ' ');
+			words.insert(substr);
+		}
+
+		//convert the words to lowercase
+		for (auto word : words)
+		{
+			//convert the word to lowercase
+			for (char &c : word)
+			{
+				c = tolower(c);
+			}
+		}
+
+
+		// Search for the words in the songs
+		if (searchType == "album")
+		{
+			set<string> albums;
+
+			for (auto &album : AlbumMap)
+			{
+				string albumLower = album.first;
 				
-				for (char &c : searchValueLower)
+
+				for (char &c : albumLower)
 				{
 					c = tolower(c);
 				}
 
-				if (songLower.find(searchValueLower) != string::npos)
+
+				for (auto &word : words)
+				{
+					if (albumLower.find(word) != string::npos)
+					{
+						albums.insert(album.first);
+					}
+				}
+			}
+
+			if (albums.empty())
+			{
+				cout << "No results found." << endl;
+			}
+			else
+			{
+				cout << "Your search results exist in the following albums: " << endl;
+				for (auto &album : albums)
+				{
+					cout << album << endl;
+				}
+				cout << endl;
+			}
+		}
+
+		// Search for the words in the songs
+		if (searchType == "song")
+		{
+			set<string> albums;
+
+			for (auto &album : AlbumMap)
+			{
+				for (auto &song : album.second.songs)
+				{
+					string songLower = song;
+
+					for (char &c : songLower)
+					{
+						c = tolower(c);
+					}
+
+					for (auto &word : words)
+					{
+						if (songLower.find(word) != string::npos)
+						{
+							albums.insert(album.first);
+						}
+					}
+				}
+			}
+
+			if (albums.empty())
+			{
+				cout << "No results found." << endl;
+			}
+			else
+			{
+				cout << "Your search results exist in the following albums: " << endl;
+				for (auto &album : albums)
+				{
+					cout << album << endl;
+				}
+				cout << endl;
+			}
+		}
+
+		// Search for the words in the artists
+		if (searchType == "artist")
+		{
+			set<string> albums;
+
+			for (auto &album : AlbumMap)
+			{
+				for (auto &artist : album.second.artists)
+				{
+					string artistLower = artist;
+
+					for (char &c : artistLower)
+					{
+						c = tolower(c);
+					}
+
+					for (auto &word : words)
+					{
+						if (artistLower.find(word) != string::npos)
+						{
+							albums.insert(album.first);
+						}
+					}
+				}
+			}
+
+			if (albums.empty())
+			{
+				cout << "No results found." << endl;
+			}
+			else
+			{
+				cout << "Your search results exist in the following albums: " << endl;
+				for (auto &album : albums)
+				{
+					cout << album << endl;
+				}
+				cout << endl;
+			}
+		}
+	}
+	// Check if the search value has a +
+	else if(searchValue.find("+") != string::npos)
+	{
+		set<string> words;
+		stringstream ss(searchValue);
+		
+
+		while (ss.good())
+		{
+			string substr;
+			getline(ss, substr, '+');
+			words.insert(substr);
+		}
+
+		//convert the words to lowercase
+		for (auto word : words)
+		{
+			//convert the word to lowercase
+			for (char &c : word)
+			{
+				c = tolower(c);
+			}
+		}
+
+		if(searchType == "album")
+		{
+			set<string> albums;
+
+			for (auto &album : AlbumMap)
+			{
+				string albumLower = album.first;
+				
+
+				for (char &c : albumLower)
+				{
+					c = tolower(c);
+				}
+
+				bool found = true;
+
+				for (auto &word : words)
+				{
+					if (albumLower.find(word) == string::npos)
+					{
+						found = false;
+					}
+				}
+
+				if(found)
 				{
 					albums.insert(album.first);
 				}
 			}
-		}
-		if (albums.empty())
-		{
-			cout << "No results found." << endl;
-		}
-		else
-		{
-			cout << "Your search results exist in the following albums: " << endl;
-			for (auto &album : albums)
+
+			if (albums.empty())
 			{
-				cout << album << endl;
+				cout << "No results found." << endl;
 			}
-			cout << endl;
+			else
+			{
+				cout << "Your search results exist in the following albums: " << endl;
+				for (auto &album : albums)
+				{
+					cout << album << endl;
+				}
+				cout << endl;
+			}
+		}
+		else if(searchType == "artist")
+		{
+			set<string> albums;
+
+			for (auto &album : AlbumMap)
+			{
+				for (auto &artist : album.second.artists)
+				{
+					string artistLower = artist;
+
+					for (char &c : artistLower)
+					{
+						c = tolower(c);
+					}
+
+					bool found = true;
+
+					for (auto &word : words)
+					{
+						if (artistLower.find(word) == string::npos)
+						{
+							found = false;
+						}
+					}
+
+					if (found)
+					{
+						albums.insert(album.first);
+					}
+				}
+			}
+
+			if (albums.empty())
+			{
+				cout << "No results found." << endl;
+			}
+			else
+			{
+				cout << "Your search results exist in the following albums: " << endl;
+				for (auto &album : albums)
+				{
+					cout << album << endl;
+				}
+				cout << endl;
+			}
+		}
+		else if(searchType == "song")
+		{
+			set<string> albums;
+
+			for (auto &album : AlbumMap)
+			{
+				for (auto &song : album.second.songs)
+				{
+					string songLower = song;
+
+					for (char &c : songLower)
+					{
+						c = tolower(c);
+					}
+
+					bool found = true;
+
+					for (auto &word : words)
+					{
+						if (songLower.find(word) == string::npos)
+						{
+							found = false;
+						}
+					}
+
+					if (found)
+					{
+						albums.insert(album.first);
+					}
+				}
+			}
+
+			if (albums.empty())
+			{
+				cout << "No results found." << endl;
+			}
+			else
+			{
+				cout << "Your search results exist in the following albums: " << endl;
+				for (auto &album : albums)
+				{
+					cout << album << endl;
+				}
+				cout << endl;
+			}
+		}
+
+	}
+	// Check if the search value has a -
+	else if(searchValue.find("-") != string::npos)
+	{
+		set<string> words;
+		stringstream ss(searchValue);
+
+		while (ss.good())
+		{
+			string substr;
+			getline(ss, substr, '-');
+			words.insert(substr);
+		}
+
+		//convert the words to lowercase
+		for (auto word : words)
+		{
+			//convert the word to lowercase
+			for (char &c : word)
+			{
+				c = tolower(c);
+			}
+		}
+
+
+		if (searchType == "album")
+		{
+			set<string> albums;
+
+			for (auto &album : AlbumMap)
+			{
+				string albumLower = album.first;
+
+				for (char &c : albumLower)
+				{
+					c = tolower(c);
+				}
+
+				bool found = true;
+
+				for (auto &word : words)
+				{
+					if (albumLower.find(word) != string::npos)
+					{
+						found = false;
+					}
+				}
+
+				if (found)
+				{
+					albums.insert(album.first);
+				}
+			}
+
+			if (albums.empty())
+			{
+				cout << "No results found." << endl;
+			}
+			else
+			{
+				cout << "Your search results exist in the following albums: " << endl;
+				for (auto &album : albums)
+				{
+					cout << album << endl;
+				}
+				cout << endl;
+			}
+		}
+		else if (searchType == "artist")
+		{
+			set<string> albums;
+
+			for (auto &album : AlbumMap)
+			{
+				for (auto &artist : album.second.artists)
+				{
+					string artistLower = artist;
+
+					for (char &c : artistLower)
+					{
+						c = tolower(c);
+					}
+
+					bool found = true;
+
+					for (auto &word : words)
+					{
+						if (artistLower.find(word) != string::npos)
+						{
+							found = false;
+						}
+					}
+
+					if (found)
+					{
+						albums.insert(album.first);
+					}
+				}
+			}
+
+			if (albums.empty())
+			{
+				cout << "No results found." << endl;
+			}
+			else
+			{
+				cout << "Your search results exist in the following albums: " << endl;
+				for (auto &album : albums)
+				{
+					cout << album << endl;
+				}
+				cout << endl;
+			}
+		}
+		else if (searchType == "song")
+		{
+			set<string> albums;
+
+			for (auto &album : AlbumMap)
+			{
+				for (auto &song : album.second.songs)
+				{
+					string songLower = song;
+
+					for (char &c : songLower)
+					{
+						c = tolower(c);
+					}
+
+					bool found = true;
+
+					for (auto &word : words)
+					{
+						if (songLower.find(word) != string::npos)
+						{
+							found = false;
+						}
+					}
+
+					if (found)
+					{
+						albums.insert(album.first);
+					}
+				}
+			}
+
+			if (albums.empty())
+			{
+				cout << "No results found." << endl;
+			}
+			else
+			{
+				cout << "Your search results exist in the following albums: " << endl;
+				for (auto &album : albums)
+				{
+					cout << album << endl;
+				}
+				cout << endl;
+			}
 		}
 	}
+	// default search
 	else
 	{
-		cout << "Error: Invalid search type." << endl;
+		if (searchType == "album")
+		{
+			set<string> albums;
+
+			for (auto &album : AlbumMap)
+			{
+				string albumLower = album.first;
+
+				for (char &c : albumLower)
+				{
+					c = tolower(c);
+				}
+
+				if (albumLower.find(searchValue) != string::npos)
+				{
+					albums.insert(album.first);
+				}
+			}
+
+			if (albums.empty())
+			{
+				cout << "No results found." << endl;
+			}
+			else
+			{
+				cout << "Your search results exist in the following albums: " << endl;
+				for (auto &album : albums)
+				{
+					cout << album << endl;
+				}
+				cout << endl;
+			}
+		}
+
+		if (searchType == "song")
+		{
+			set<string> albums;
+
+			for (auto &album : AlbumMap)
+			{
+				for (auto &song : album.second.songs)
+				{
+					string songLower = song;
+
+					for (char &c : songLower)
+					{
+						c = tolower(c);
+					}
+
+					if (songLower.find(searchValue) != string::npos)
+					{
+						albums.insert(album.first);
+					}
+				}
+			}
+
+			if (albums.empty())
+			{
+				cout << "No results found." << endl;
+			}
+			else
+			{
+				cout << "Your search results exist in the following albums: " << endl;
+				for (auto &album : albums)
+				{
+					cout << album << endl;
+				}
+				cout << endl;
+			}
+		}
+
+		if (searchType == "artist")
+		{
+			set<string> albums;
+
+			for (auto &album : AlbumMap)
+			{
+				for (auto &artist : album.second.artists)
+				{
+					string artistLower = artist;
+
+					for (char &c : artistLower)
+					{
+						c = tolower(c);
+					}
+
+					if (artistLower.find(searchValue) != string::npos)
+					{
+						albums.insert(album.first);
+					}
+				}
+			}
+
+			if (albums.empty())
+			{
+				cout << "No results found." << endl;
+			}
+			else
+			{
+				cout << "Your search results exist in the following albums: " << endl;
+				for (auto &album : albums)
+				{
+					cout << album << endl;
+				}
+				cout << endl;
+			}
+		}
 	}
+
+
 
 }
 
