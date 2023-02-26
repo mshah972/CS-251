@@ -379,26 +379,21 @@ public:
 	{
 		mymatrix<T> result;
 
-		//
-		// TODO
-		//
-
 		result.NumRows = NumRows;
-
 		result.Rows = new ROW[NumRows];
 
 		for (int r = 0; r < NumRows; ++r)
 		{
 			result.Rows[r].NumCols = Rows[r].NumCols;
 			result.Rows[r].Cols = new T[result.Rows[r].NumCols];
-
-			for (int c = 0; c < Rows[r].NumCols; ++c)
+			for (int c = 0; c < result.Rows[r].NumCols; ++c)
 			{
 				result.Rows[r].Cols[c] = Rows[r].Cols[c] * scalar;
 			}
 		}
 
 		return result;
+	
 	}
 
 	//
