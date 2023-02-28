@@ -106,7 +106,6 @@ public:
 		// TODO
 		//
 
-
 		// an array with R ROW structs:
 		Rows = new ROW[R];
 		// total # of rows (0..NumRows-1)
@@ -169,9 +168,7 @@ public:
 	//
 	int numrows() const
 	{
-		//
-		// TODO
-		//
+		// return the # of rows
 		return NumRows;
 	}
 
@@ -188,10 +185,7 @@ public:
 		if (r < 0 || r >= NumRows)
 			throw invalid_argument("mymatrix::numcols: row");
 
-		//
-		// TODO
-		//
-
+		// return the # of columns in row r
 		return Rows[r].NumCols;
 	}
 
@@ -256,14 +250,10 @@ public:
 	void grow(int R, int C)
 	{
 		if (R < 1)
-			throw invalid_argument("mymatrix::grow: # of rows");
+			throw invalid_argument("mymatrix::grow: rows");
 		if (C < 1)
-			throw invalid_argument("mymatrix::grow: # of cols");
-
-		//
-		// TODO:
-		//
-
+			throw invalid_argument("mymatrix::grow: columns");
+		
 		// if the matrix has fewer than R rows, then add rows:
 		if (R > NumRows)
 		{
@@ -290,209 +280,206 @@ public:
 			Rows = temp;
 			NumRows = R;
 		}
-		else
-		{
-			// if the matrix has R or more rows, then grow the columns:
-			for (int r = 0; r < NumRows; ++r)
-			{
-				growcols(r, C);
-			}
-		}
-	}
 
-	//
-	// size
-	//
-	// Returns the total # of elements in the matrix.
-	//
-	int size() const
-	{
-		//
-		// TODO
-		//
-		int total = 0;
-
+		// if any row has fewer than C columns, then add columns, additional columns are initialized to the default value of T:
 		for (int r = 0; r < NumRows; ++r)
 		{
-			total += Rows[r].NumCols;
-		}
-
-		return total;
-	}
-
-	//
-	// at
-	//
-	// Returns a reference to the element at location (r, c); this
-	// allows you to access the element or change it:
-	//
-	//    M.at(r, c) = ...
-	//    cout << M.at(r, c) << endl;
-	//
-	T &at(int r, int c) const
-	{
-		if (r < 0 || r >= NumRows)
-			throw invalid_argument("mymatrix::at: row");
-		if (c < 0 || c >= Rows[r].NumCols)
-			throw invalid_argument("mymatrix::at: col");
-
-		//
-		// TODO
-		//
-
-		return Rows[r].Cols[c];
-	}
-
-	//
-	// ()
-	//
-	// Returns a reference to the element at location (r, c); this
-	// allows you to access the element or change it:
-	//
-	//    M(r, c) = ...
-	//    cout << M(r, c) << endl;
-	//
-	T &operator()(int r, int c) const
-	{
-		if (r < 0 || r >= NumRows)
-			throw invalid_argument("mymatrix::(): row");
-		if (c < 0 || c >= Rows[r].NumCols)
-			throw invalid_argument("mymatrix::(): col");
-
-		//
-		// TODO
-		//
-
-		return Rows[r].Cols[c];
-	}
-
-	//
-	// scalar multiplication
-	//
-	// Multiplies every element of this matrix by the given scalar value,
-	// producing a new matrix that is returned.  "This" matrix is not
-	// changed.
-	//
-	// Example:  M2 = M1 * 2;
-	//
-	mymatrix<T> operator*(T scalar)
-	{
-		mymatrix<T> result;
-
-		result.NumRows = NumRows;
-		result.Rows = new ROW[NumRows];
-
-		for (int r = 0; r < NumRows; ++r)
-		{
-			result.Rows[r].NumCols = Rows[r].NumCols;
-			result.Rows[r].Cols = new T[result.Rows[r].NumCols];
-			for (int c = 0; c < result.Rows[r].NumCols; ++c)
+			if (C > Rows[r].NumCols)
 			{
-				result.Rows[r].Cols[c] = Rows[r].Cols[c] * scalar;
-			}
-		}
-
-		return result;
-	
-	}
-
-	//
-	// matrix multiplication
-	//
-	// Performs matrix multiplication M1 * M2, where M1 is "this" matrix and
-	// M2 is the "other" matrix.  This produces a new matrix, which is returned.
-	// "This" matrix is not changed, and neither is the "other" matrix.
-	//
-	// Example:  M3 = M1 * M2;
-	//
-	// NOTE: M1 and M2 must be rectangular, if not an exception is thrown.  In
-	// addition, the sizes of M1 and M2 must be compatible in the following sense:
-	// M1 must be of size RxN and M2 must be of size NxC.  In this case, matrix
-	// multiplication can be performed, and the resulting matrix is of size RxC.
-	//
-	mymatrix<T> operator*(const mymatrix<T> &other)
-	{
-		mymatrix<T> result;
-
-		//
-		// both matrices must be rectangular for this to work:
-		//
-
-		//
-		// TODO
-		//
-		// if (this matrix is not rectangular)
-		//   throw runtime_error("mymatrix::*: this not rectangular");
-		//
-		// if (other matrix is not rectangular)
-		//   throw runtime_error("mymatrix::*: other not rectangular");
-
-		//
-		// Okay, both matrices are rectangular.  Can we multiply?  Only
-		// if M1 is R1xN and M2 is NxC2.  This yields a result that is
-		// R1xC2.
-		//
-		// Example: 3x4 * 4x2 => 3x2
-		//
-
-		//
-		// TODO
-		//
-		// if (this matrix's # of columns != other matrix's # of rows)
-		//   throw runtime_error("mymatrix::*: size mismatch");
-
-		//
-		// Okay, we can multiply:
-		//
-
-		//
-		// TODO
-		//
-
-		// result is RxC2: R rows, C2 columns
-		result.NumRows = NumRows;
-
-		// allocate R rows of ROWs
-		result.Rows = new ROW[NumRows];
-
-		// for each row in result: R rows of ROWs 
-		for (int r = 0; r < NumRows; ++r)
-		{	
-			// each row has C2 columns
-			result.Rows[r].NumCols = other.Rows[r].NumCols;
-			// allocate C2 columns of T values
-			result.Rows[r].Cols = new T[result.Rows[r].NumCols];
-
-			// for each column in result: C2 columns of T values
-			for (int c = 0; c < other.Rows[r].NumCols; ++c)
-			{
-				result.Rows[r].Cols[c] = 0;
-
-				// for each column in this: N columns of T values
-				for (int i = 0; i < Rows[r].NumCols; ++i)
+				T *temp = new T[C];
+				for (int c = 0; c < Rows[r].NumCols; ++c)
 				{
-					result.Rows[r].Cols[c] += Rows[r].Cols[i] * other.Rows[i].Cols[c];
+					temp[c] = Rows[r].Cols[c];
 				}
+				for (int c = Rows[r].NumCols; c < C; ++c)
+				{
+					temp[c] = T{};
+				}
+				delete[] Rows[r].Cols;
+				Rows[r].Cols = temp;
+				Rows[r].NumCols = C;
 			}
 		}
-
-		return result;
 	}
 
-	//
-	// _output
-	//
-	// Outputs the contents of the matrix; for debugging purposes.
-	//
-	void _output()
+//
+// size
+//
+// Returns the total # of elements in the matrix.
+//
+int size() const
+{
+
+	int total = 0;
+
+	// compute the total # of elements in the matrix
+	for (int r = 0; r < NumRows; ++r)
 	{
-		for (int r = 0; r < this->NumRows; ++r)
+		total += Rows[r].NumCols;
+	}
+
+	return total;
+}
+
+//
+// at
+//
+// Returns a reference to the element at location (r, c); this
+// allows you to access the element or change it:
+//
+//    M.at(r, c) = ...
+//    cout << M.at(r, c) << endl;
+//
+T &at(int r, int c) const
+{
+	if (r < 0 || r >= NumRows)
+		throw invalid_argument("mymatrix::at: row");
+	if (c < 0 || c >= Rows[r].NumCols)
+		throw invalid_argument("mymatrix::at: col");
+
+	// retun the element at (r, c)
+	return Rows[r].Cols[c];
+}
+
+//
+// ()
+//
+// Returns a reference to the element at location (r, c); this
+// allows you to access the element or change it:
+//
+//    M(r, c) = ...
+//    cout << M(r, c) << endl;
+//
+T &operator()(int r, int c) const
+{
+	if (r < 0 || r >= NumRows)
+		throw invalid_argument("mymatrix::(): row");
+	if (c < 0 || c >= Rows[r].NumCols)
+		throw invalid_argument("mymatrix::(): col");
+
+	// retun the element at (r, c)
+	return Rows[r].Cols[c];
+}
+
+//
+// scalar multiplication
+//
+// Multiplies every element of this matrix by the given scalar value,
+// producing a new matrix that is returned.  "This" matrix is not
+// changed.
+//
+// Example:  M2 = M1 * 2;
+//
+mymatrix<T> operator*(T scalar)
+{
+	mymatrix<T> result;
+
+	result.NumRows = NumRows;
+	result.Rows = new ROW[NumRows];
+
+	// multiply every element by the scalar value
+	for (int r = 0; r < NumRows; ++r)
+	{
+		result.Rows[r].NumCols = Rows[r].NumCols;
+		result.Rows[r].Cols = new T[result.Rows[r].NumCols];
+		for (int c = 0; c < result.Rows[r].NumCols; ++c)
 		{
-			for (int c = 0; c < this->Rows[r].NumCols; ++c)
-			{
-				cout << this->Rows[r].Cols[c] << " ";
-			}
-			cout << endl;
+			result.Rows[r].Cols[c] = Rows[r].Cols[c] * scalar;
 		}
 	}
-};
+
+	return result;
+}
+
+//
+// matrix multiplication
+//
+// Performs matrix multiplication M1 * M2, where M1 is "this" matrix and
+// M2 is the "other" matrix.  This produces a new matrix, which is returned.
+// "This" matrix is not changed, and neither is the "other" matrix.
+//
+// Example:  M3 = M1 * M2;
+//
+// NOTE: M1 and M2 must be rectangular, if not an exception is thrown.  In
+// addition, the sizes of M1 and M2 must be compatible in the following sense:
+// M1 must be of size RxN and M2 must be of size NxC.  In this case, matrix
+// multiplication can be performed, and the resulting matrix is of size RxC.
+//
+mymatrix<T> operator*(const mymatrix<T> &other)
+{
+	mymatrix<T> result;
+
+	result.NumRows = NumRows;
+	result.Rows = new ROW[NumRows];
+
+	// check if the matrix is rectangular
+	for (int r = 0; r < NumRows; ++r)
+	{
+		if (Rows[r].NumCols != Rows[0].NumCols)
+		{
+			throw runtime_error("mymatrix::*: this not rectangular");
+		}
+	}
+
+	for (int r = 0; r < other.NumRows; ++r)
+	{
+		if (other.Rows[r].NumCols != other.Rows[0].NumCols)
+		{
+			throw runtime_error("mymatrix::*: other not rectangular");
+		}
+	}
+
+	//
+	// Okay, both matrices are rectangular.  Can we multiply?  Only
+	// if M1 is R1xN and M2 is NxC2.  This yields a result that is
+	// R1xC2.
+	//
+	// Example: 3x4 * 4x2 => 3x2
+	//
+
+	// check if we can multiply
+	if (Rows[0].NumCols != other.NumRows)
+	{
+		throw runtime_error("mymatrix::*: size mismatch");
+	}
+
+	//
+	// Okay, we can multiply:
+	//
+
+	// if we can multiply
+	for (int r = 0; r < NumRows; ++r)
+	{
+		result.Rows[r].NumCols = other.Rows[0].NumCols;
+		result.Rows[r].Cols = new T[result.Rows[r].NumCols];
+		for (int c = 0; c < result.Rows[r].NumCols; ++c)
+		{
+			result.Rows[r].Cols[c] = 0;
+			for (int i = 0; i < Rows[0].NumCols; ++i)
+			{
+				result.Rows[r].Cols[c] += Rows[r].Cols[i] * other.Rows[i].Cols[c];
+			}
+		}
+	}
+
+	return result;
+}
+
+//
+// _output
+//
+// Outputs the contents of the matrix; for debugging purposes.
+//
+void _output()
+{
+	for (int r = 0; r < this->NumRows; ++r)
+	{
+		for (int c = 0; c < this->Rows[r].NumCols; ++c)
+		{
+			cout << this->Rows[r].Cols[c] << " ";
+		}
+		cout << endl;
+	}
+}
+}
+;

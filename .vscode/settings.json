@@ -41,7 +41,8 @@
     "utility": "cpp",
     "fstream": "cpp",
     "xstring": "cpp",
-    "xtree": "cpp"
+    "xtree": "cpp",
+    "stdexcept": "cpp"
   },
   "C_Cpp.dimInactiveRegions": false
 }
